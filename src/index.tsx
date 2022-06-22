@@ -13,6 +13,9 @@ interface NylasReactHookProps {
   endpointOverrideExchangeMailboxToken?: string
 }
 
+const getUrlQueryParam = (param: string) =>
+  new URLSearchParams(window.location.search).get(param)
+
 const useNylasReact = (props: NylasReactHookProps) => {
   const startAuthProcess = useCallback(
     async (email_address?: string) => {
@@ -50,9 +53,7 @@ const useNylasReact = (props: NylasReactHookProps) => {
 
   const exchangeMailboxToken = useCallback(async () => {
     try {
-      const access_token = new URLSearchParams(window.location.search).get(
-        'code'
-      )
+      const access_token = getUrlQueryParam('code')
       if (!access_token) {
         return false
       }
@@ -67,6 +68,7 @@ const useNylasReact = (props: NylasReactHookProps) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          csrfToken: getUrlQueryParam('state'),
           token: access_token,
         }),
       })
